@@ -1,11 +1,13 @@
 FROM alpine:latest as strongswan-build
 LABEL author=@kerberjg
 
+##
 ## BUILD AND INSTALL DEPENDENCIES
-ARG BUILD_DEPS="build-base curl linux-headers openssl-dev gnupg"
-ARG RUNTIME_DEPS="iptables uuid-runtime openssl"
+##
 
 # Install dependencies (Alpine packages)
+# TODO: consider using libressl-dev instead
+ARG BUILD_DEPS="build-base curl linux-headers openssl-dev gnupg"
 RUN apk --no-cache add --virtual build_deps ${BUILD_DEPS}
 
 # Build and install Strongswan
@@ -26,7 +28,8 @@ RUN mkdir /tmp/strongswan \
 FROM alpine:latest
 COPY --from=strongswan-build /usr/local /usr/local
 
-## RUNTIME DEPENDENCIES
+# Install dependencies
+ARG RUNTIME_DEPS="iptables libuuid openssl gettext"
 RUN apk --no-cache add --virtual runtime_deps ${RUNTIME_DEPS}
 
 ## RUNTIME SETUP
