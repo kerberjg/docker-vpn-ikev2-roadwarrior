@@ -24,6 +24,9 @@ RUN mkdir /tmp/strongswan \
     && ./configure  --enable-eap-identity --enable-eap-md5 --enable-eap-mschapv2 --enable-eap-tls --enable-eap-ttls --enable-eap-peap --enable-eap-tnc --enable-eap-dynamic --enable-eap-radius --enable-xauth-eap  --enable-dhcp  --enable-openssl  --enable-addrblock --enable-unity --enable-certexpire --enable-radattr --enable-swanctl --enable-openssl --disable-gmp \
     && make && make install
 
+RUN rm -rf /tmp/* \
+    && apk del build_deps \
+    && rm -rf /var/cache/apk/* 
 ### PREPARE AND RUN
 FROM alpine:latest
 COPY --from=strongswan-build /usr/local /usr/local
