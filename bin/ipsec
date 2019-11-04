@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# IPsec secret
+# hotfix for openssl `unable to write 'random state'` stderr
+SHARED_SECRET="123$(openssl rand -base64 32 2>/dev/null)"
+[ -f /etc/ipsec.secrets ] || echo ": PSK \"${SHARED_SECRET}\"" > /etc/ipsec.secrets
+echo && echo "SHARED SECRET: ${SHARED_SECRET}" && echo
+
+# IPsec config
+envsubst '
+         ${HOST_ADDR}
+         ${VPN_SUBNET}
+         ${VPN_SUBNET_IP6}
+         ' < /data/config/ipsec.conf.template > /usr/local/etc/ipsec.conf
+
+# Strongswan config
+envsubst '
+         ${DNS_SERVER1}
+         ${DNS_SERVER2}
+         ' < /data/config/strongswan.conf.template > /etc/strongswan.conf
