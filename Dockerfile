@@ -21,7 +21,39 @@ RUN mkdir /tmp/strongswan \
     && gpg --verify ./strongswan.tar.gz.sig \
     && tar --strip-components=1 -C /tmp/strongswan -xf /tmp/strongswan.tar.gz \
     && cd /tmp/strongswan \
-    && ./configure  --enable-eap-identity --enable-eap-md5 --enable-eap-mschapv2 --enable-eap-tls --enable-eap-ttls --enable-eap-peap --enable-eap-tnc --enable-eap-dynamic --enable-eap-radius --enable-xauth-eap  --enable-dhcp  --enable-openssl  --enable-addrblock --enable-unity --enable-certexpire --enable-radattr --enable-swanctl --enable-openssl --disable-gmp \
+    && ./configure \
+    --enable-aesni \
+    --enable-chapoly \
+    --enable-sha3 \
+    --enable-newhope \
+    --enable-ntru \
+#    --enable-eap-md5 \
+#    --enable-eap-mschapv2 \
+#    --enable-eap-identity \
+#    --enable-eap-tls \
+#    --enable-eap-ttls \
+#    --enable-eap-peap \
+#    --enable-eap-tnc \
+#    --enable-eap-dynamic \
+#    --enable-eap-radius \
+#    --enable-xauth-eap \
+    --enable-dhcp \
+    --enable-openssl \
+    --enable-addrblock \
+    --enable-farp \
+#    --enable-unity \
+    --enable-radattr \
+    --enable-swanctl \
+    --enable-openssl \
+    --disable-ikev2 \
+    --disable-gmp \
+    --disable-sha1 \
+    --disable-sha2 \
+    --disable-md5 \
+    --disable-rc2 \
+    --disable-rc4 \
+    --disable-hmac \
+    --disable-des \
     && make && make install
 
 # TODO: revisit strongswan configuration 
