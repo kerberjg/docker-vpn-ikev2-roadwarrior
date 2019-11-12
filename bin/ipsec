@@ -7,7 +7,7 @@ then
     SHARED_SECRET="123$(openssl rand -base64 256 2>/dev/null)"
 fi
 [ -f /etc/ipsec.secrets ] || echo ": PSK \"${SHARED_SECRET}\"" > /etc/ipsec.secrets
-echo && echo "SHARED SECRET: ${SHARED_SECRET}" && echo
+echo && echo "=== SHARED SECRET ===" && echo "${SHARED_SECRET}" && echo
 
 # IPsec config
 envsubst '
@@ -21,3 +21,9 @@ envsubst '
          ${DNS_SERVER1}
          ${DNS_SERVER2}
          ' < /data/config/strongswan.conf.template > /etc/strongswan.conf
+
+# Apple mobileconfig
+./generate-mobileconfig > ~/vpn.mobileconfig
+echo && echo "=== APPLE MOBILECONFIG ===" && echo
+cat ~/vpn.mobileconfig
+echo
