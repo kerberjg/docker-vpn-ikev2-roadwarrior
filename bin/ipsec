@@ -23,7 +23,7 @@ envsubst '
          ' < /data/config/strongswan.conf.template > /etc/strongswan.conf
 
 # Apple mobileconfig
-./generate-mobileconfig > ~/vpn.mobileconfig
+/data/bin/generate-mobileconfig > ~/vpn.mobileconfig
 echo && echo "=== APPLE MOBILECONFIG ===" && echo
 cat ~/vpn.mobileconfig
 echo
