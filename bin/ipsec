@@ -1,8 +1,11 @@
 #!/bin/sh
 
 # IPsec secret
-# hotfix for openssl `unable to write 'random state'` stderr
-SHARED_SECRET="123$(openssl rand -base64 32 2>/dev/null)"
+if [ -z "${SHARED_SECRET}"]
+then
+    # hotfix for openssl `unable to write 'random state'` stderr
+    SHARED_SECRET="123$(openssl rand -base64 32 2>/dev/null)"
+fi
 [ -f /etc/ipsec.secrets ] || echo ": PSK \"${SHARED_SECRET}\"" > /etc/ipsec.secrets
 echo && echo "SHARED SECRET: ${SHARED_SECRET}" && echo
 
