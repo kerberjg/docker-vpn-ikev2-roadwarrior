@@ -45,7 +45,7 @@ RUN mkdir /tmp/strongswan \
     --enable-radattr \
     --enable-swanctl \
     --enable-openssl \
-    --disable-ikev2 \
+    --disable-ikev1 \
     --disable-gmp \
     --disable-sha1 \
     --disable-sha2 \
