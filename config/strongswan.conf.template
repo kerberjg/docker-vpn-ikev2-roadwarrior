@@ -17,6 +17,10 @@ charon {
         attr {
             dns = ${DNS_SERVER1}, ${DNS_SERVER2}
         }
+
+        dhcp {
+            identity_lease = yes
+        }
     }
 }
 

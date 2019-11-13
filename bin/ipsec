@@ -14,6 +14,8 @@ envsubst '
          ${HOST_ADDR}
          ${VPN_SUBNET}
          ${VPN_SUBNET_IP6}
+         ${DNS_SERVER1}
+         ${DNS_SERVER2}
          ' < /data/config/ipsec.conf.template > /usr/local/etc/ipsec.conf
 
 # Strongswan config
