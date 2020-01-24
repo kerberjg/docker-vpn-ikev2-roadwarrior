@@ -1,7 +1,6 @@
 #!/bin/sh
 
 ## TODO: enable IPv6
-## TODO: consider Android fragmentation issues (source https://www.zeitgeist.se/2013/11/26/mtu-woes-in-ipsec-tunnels-how-to-fix/)
 
 ### Packet forwarding
 ## IPv4
@@ -15,7 +14,7 @@ sysctl -w net.ipv4.conf.all.send_redirects=0
 #sysctl net.ipv6.conf.all.send_redirects=0
 #sysctl net.ipv6.conf.eth0.proxy_ndp=1
 ## Android fragmentation fix
-#sysctl net.ipv4.ip_no_pmtu_disc=1
+sysctl net.ipv4.ip_no_pmtu_disc=1
 
 ### Services
 ## IPv6
