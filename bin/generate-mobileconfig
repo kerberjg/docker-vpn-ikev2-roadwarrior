@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # The MIT License (MIT)
 #
@@ -22,21 +22,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# In normal cases, you will only need to pass the HOST of your server.
 [ "no${HOST_ADDR}" = "no" ] && echo "\$HOST environment variable required." && exit 1
 
-: ${PROFILE_IDENTIFIER=$(echo -n "${HOST_ADDR}." | tac -s. | sed 's/\.$//g')}
+: ${PROFILE_IDENTIFIER=$(echo $HOST_ADDR | tr '.' '\n' | tac | paste -s -d '.')}
 : ${PROFILE_UUID=$(hostname)}
-
-# These variable, especially CONN_UUID, are bind to per username,
-# which currently, all users share the same secrets and configurations.
 : ${CONN_NAME:="My IKEv2 VPN"}
 : ${PROFILE_NAME:="${CONN_NAME} Profile"}
 : ${CONN_IDENTIFIER="${PROFILE_IDENTIFIER}.shared-configuration"}
 : ${CONN_UUID=$(uuidgen)}
 : ${CONN_HOST=${HOST_ADDR}}
 : ${CONN_REMOTE_IDENTIFIER=${HOST_ADDR}}
-CONN_SHARED_SECRET=$(cat /etc/ipsec.secrets | sed 's/.*"\(.*\)"/\1/g')
+CONN_SHARED_SECRET=$(cat /usr/local/etc/ipsec.secrets | sed 's/.*"\(.*\)"/\1/g')
 
 cat <<EOF
 <?xml version="1.0" encoding="UTF-8"?>

@@ -69,7 +69,7 @@ FROM alpine:latest
 COPY --from=strongswan-build / /
 
 # Install dependencies
-ARG RUNTIME_DEPS="iptables libuuid openssl gettext"
+ARG RUNTIME_DEPS="iptables libuuid util-linux openssl gettext"
 RUN apk --no-cache add --virtual runtime_deps ${RUNTIME_DEPS}
 
 ##
