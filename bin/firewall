@@ -1,0 +1,15 @@
+#!/bin/sh
+
+### Firewall
+## Android fragmentation fix
+iptables -t mangle -A FORWARD -o eth0 \
+ -p tcp -m tcp --tcp-flags SYN,RST SYN \
+  -s $VPN_SUBNET \
+  -m tcpmss --mss 1361:1536 \
+  -j TCPMSS --set-mss 1360
+## IPv4
+iptables -t nat -A POSTROUTING -s $VPN_SUBNET -o eth0 -m policy --dir out --pol ipsec -j ACCEPT
+iptables -t nat -A POSTROUTING -s $VPN_SUBNET -o eth0 -j MASQUERADE
+## IPv6
+#ip6tables -t nat -A POSTROUTING -s $VPN_SUBNET_IP6 -o eth0 -m policy --dir out --pol ipsec -j ACCEPT
+#ip6tables -t nat -A POSTROUTING -s $VPN_SUBNET_IP6 -o eth0 -j MASQUERADE

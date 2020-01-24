@@ -1,0 +1,148 @@
+#!/bin/sh
+
+# The MIT License (MIT)
+#
+# Copyright (c) 2016 Mengdi Gao
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+[ "no${HOST_ADDR}" = "no" ] && echo "\$HOST_ADDR environment variable required." && exit 1
+[ "no${HOST_FQDN}" = "no" ] && echo "\$HOST_FQDN environment variable required." && exit 1
+
+: ${PROFILE_IDENTIFIER=$(echo $HOST_ADDR | tr '.' '\n' | tac | paste -s -d '.')}
+: ${PROFILE_UUID=$(hostname)}
+: ${CONN_NAME:="My IKEv2 VPN"}
+: ${PROFILE_NAME:="${CONN_NAME} Profile"}
+: ${CONN_IDENTIFIER="${PROFILE_IDENTIFIER}.shared-configuration"}
+: ${CONN_UUID=$(uuidgen)}
+: ${CONN_HOST=${HOST_ADDR}}
+: ${CONN_REMOTE_IDENTIFIER=${HOST_FQDN}}
+CONN_SHARED_SECRET=$(cat /usr/local/etc/ipsec.secrets | sed 's/.*"\(.*\)"/\1/g')
+
+cat <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Read more: https://wiki.strongswan.org/projects/strongswan/wiki/AppleIKEv2Profile -->
+<plist version="1.0">
+    <dict>
+        <!-- Set the name to whatever you like, it is used in the profile list on the device -->
+        <key>PayloadDisplayName</key>
+        <string>${PROFILE_NAME}</string>
+        <!-- This is a reverse-DNS style unique identifier used to detect duplicate profiles -->
+        <key>PayloadIdentifier</key>
+        <string>${PROFILE_IDENTIFIER}</string>
+        <!-- A globally unique identifier, use uuidgen on Linux/Mac OS X to generate it -->
+        <key>PayloadUUID</key>
+        <string>${PROFILE_UUID}</string>
+        <key>PayloadType</key>
+        <string>Configuration</string>
+        <key>PayloadVersion</key>
+        <integer>1</integer>
+        <key>PayloadContent</key>
+        <array>
+            <dict>
+                <!-- This is an extension of the identifier given above -->
+                <key>PayloadIdentifier</key>
+                <string>${CONN_IDENTIFIER}</string>
+                <!-- A globally unique identifier for this payload -->
+                <key>PayloadUUID</key>
+                <string>${CONN_UUID}</string>
+                <key>PayloadType</key>
+                <string>com.apple.vpn.managed</string>
+                <key>PayloadVersion</key>
+                <integer>1</integer>
+                <!-- This is the name of the VPN connection as seen in the VPN application later -->
+                <key>UserDefinedName</key>
+                <string>${CONN_NAME}</string>
+                <key>VPNType</key>
+                <string>IKEv2</string>
+                <key>IKEv2</key>
+                <dict>
+                    <!-- Hostname or IP address of the VPN server -->
+                    <key>RemoteAddress</key>
+                    <string>${CONN_HOST}</string>
+                    <!-- Remote identity, can be a FQDN, a userFQDN, an IP or (theoretically) a certificate's subject DN. Can't be empty.
+                     IMPORTANT: DNs are currently not handled correctly, they are always sent as identities of type FQDN -->
+                    <key>RemoteIdentifier</key>
+                    <string>${CONN_REMOTE_IDENTIFIER}</string>
+                    <!-- Local IKE identity, same restrictions as above. If it is empty the client's IP address will be used -->
+                    <key>LocalIdentifier</key>
+                    <string></string>
+                    <!-- source: https://developer.apple.com/documentation/devicemanagement/vpn/ikev2 -->
+                    <key>NATKeepAliveOffloadEnable</key>
+                    <integer>1</integer>
+                    <key>DisableMOBIKE</key>
+                    <integer>0</integer>
+                    <key>DeadPeerDetectionRate</key>
+                    <string>Medium</string>
+                    <key>DisableRedirect</key>
+                    <integer>1</integer>
+                    <key>EnableFallback</key>
+                    <integer>1</integer>
+                    <!--
+                    OnDemand references:
+                    https://developer.apple.com/business/documentation/Configuration-Profile-Reference.pdf
+                    Continue reading:
+                    https://github.com/iphoting/ovpnmcgen.rb
+                    -->
+                    <key>OnDemandEnabled</key>
+                    <integer>1</integer>
+                    <key>OnDemandRules</key>
+                    <array>
+                        <dict>
+                            <key>Action</key>
+                            <string>Connect</string>
+                            <key>InterfaceTypeMatch</key>
+                            <string>WiFi</string>
+                            <key>URLStringProbe</key>
+                            <string>http://captive.apple.com/hotspot-detect.html</string>
+                        </dict>
+                        <dict>
+                            <key>Action</key>
+                            <string>Connect</string>
+                            <key>InterfaceTypeMatch</key>
+                            <string>Cellular</string>
+                        </dict>
+                        <dict>
+                            <key>Action</key>
+                            <string>Connect</string>
+                            <key>InterfaceTypeMatch</key>
+                            <string>Ethernet</string>
+                        </dict>
+                    </array>
+                    <!-- The server is authenticated using a certificate -->
+                    <key>AuthenticationMethod</key>
+                    <string>SharedSecret</string>
+                    <key>SharedSecret</key>
+                    <string>${CONN_SHARED_SECRET}</string>
+                    <!-- Turn off EAP -->
+                    <key>ExtendedAuthEnabled</key>
+                    <integer>0</integer>
+                    <!-- AuthName key is required to dismiss the Enter Username screen on iOS 9, even if ExtendedAuthEnabled is false -->
+                    <key>AuthName</key>
+                    <string></string>
+                    <!-- AuthPassword key is required to dismiss the Enter Password screen on iOS 9, even if ExtendedAuthEnabled is false -->
+                    <key>AuthPassword</key>
+                    <string></string>
+                </dict>
+            </dict>
+        </array>
+    </dict>
+</plist>
+EOF

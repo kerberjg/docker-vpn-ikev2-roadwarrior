@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# IPsec secret
+if [ -z "${SHARED_SECRET}"]
+then
+    # hotfix for openssl `unable to write 'random state'` stderr
+    SHARED_SECRET="123$(openssl rand -base64 256 2>/dev/null)"
+fi
+[ -f /etc/ipsec.secrets ] || echo ": PSK \"${SHARED_SECRET}\"" > /usr/local/etc/ipsec.secrets
+echo && echo "=== SHARED SECRET ===" && echo "${SHARED_SECRET}" && echo
+
+# IPsec config
+envsubst '
+         ${HOST_ADDR}
+         ${HOST_FQDN}
+         ${VPN_SUBNET}
+         ${VPN_SUBNET_IP6}
+         ${DNS_SERVER1}
+         ${DNS_SERVER2}
+         ' < /data/config/ipsec.conf.template > /usr/local/etc/ipsec.conf
+
+# Strongswan config
+envsubst '
+         ${DNS_SERVER1}
+         ${DNS_SERVER2}
+         ' < /data/config/strongswan.conf.template > /etc/strongswan.conf
+
+# Apple mobileconfig
+/data/bin/generate-mobileconfig > ~/vpn.mobileconfig
+echo && echo "=== APPLE MOBILECONFIG ===" && echo
+cat ~/vpn.mobileconfig
+echo

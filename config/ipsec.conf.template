@@ -1,0 +1,40 @@
+# /etc/ipsec.conf - strongSwan IPsec configuration file
+#
+# Based on http://www.strongswan.org/uml/testresults/ikev2/rw-psk-ipv4/
+
+config setup
+    charondebug=2
+
+conn %default
+    ikelifetime=59m
+    keylife=20m
+    keyingtries=1
+    keyexchange=ikev2
+    rekey=no
+    fragmentation=yes
+    forceencaps=yes
+    dpdaction=hold
+    dpddelay=30s
+    dpdtimeout=300s
+
+    authby=secret
+
+conn rw
+    auto=add
+    compress=no
+    type=tunnel
+    ike=chacha20poly1305-prfsha256-newhope128,chacha20poly1305-prfsha256-ecp256,aes128gcm16-prfsha256-ecp256,aes256-sha256-modp2048,aes256-sha256-modp1024!
+    esp=chacha20poly1305-newhope128,chacha20poly1305-ecp256,aes128gcm16-ecp256,aes256-sha256-modp2048,aes256-sha256,aes256-sha1!
+
+    left=%defaultroute
+    leftid=${HOST_FQDN}
+    # http://wiki.loopop.net/doku.php?id=server:vpn:strongswanonopenvz
+    # https://wiki.strongswan.org/projects/strongswan/wiki/ForwardingAndSplitTunneling
+    leftsubnet=0.0.0.0/0,::/0
+    # end ref
+    leftfirewall=yes
+    right=%any
+    #rightid=%any
+    rightsourceip=${VPN_SUBNET}
+    rightdns=${DNS_SERVER1},${DNS_SERVER2}
+    #rightsourceip=${VPN_SUBNET},${VPN_SUBNET_IP6}

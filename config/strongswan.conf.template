@@ -1,0 +1,25 @@
+# /etc/strongswan.conf - strongSwan configuration file
+#
+# strongswan.conf - strongSwan configuration file
+#
+# Refer to the strongswan.conf(5) manpage for details
+#
+# Configuration changes should be made in the included files
+
+charon {
+    load_modular = yes
+    threads = 16
+    compress = yes
+    plugins {
+        include strongswan.d/charon/*.conf
+
+        dhcp {
+            identity_lease = yes
+        }
+    }
+
+    dns1 = ${DNS_SERVER1}
+    dns2 = ${DNS_SERVER2}
+}
+
+include strongswan.d/*.conf
