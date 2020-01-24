@@ -13,15 +13,13 @@ charon {
     plugins {
         include strongswan.d/charon/*.conf
 
-        # https://wiki.strongswan.org/projects/strongswan/wiki/Attrplugin
-        attr {
-            dns = ${DNS_SERVER1}, ${DNS_SERVER2}
-        }
-
         dhcp {
             identity_lease = yes
         }
     }
+
+    dns1 = ${DNS_SERVER1}
+    dns2 = ${DNS_SERVER2}
 }
 
 include strongswan.d/*.conf
