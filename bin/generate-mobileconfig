@@ -25,7 +25,7 @@
 [ "no${HOST_ADDR}" = "no" ] && echo "\$HOST_ADDR environment variable required." && exit 1
 [ "no${HOST_FQDN}" = "no" ] && echo "\$HOST_FQDN environment variable required." && exit 1
 
-: ${PROFILE_IDENTIFIER=$(echo $HOST_ADDR | tr '.' '\n' | tac | paste -s -d '.')}
+: ${PROFILE_IDENTIFIER=$(echo $HOST_FQDN | tr '.' '\n' | tac | paste -s -d '.')}
 : ${PROFILE_UUID=$(hostname)}
 : ${CONN_NAME:="My IKEv2 VPN"}
 : ${PROFILE_NAME:="${CONN_NAME} Profile"}
