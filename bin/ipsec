@@ -12,6 +12,7 @@ echo && echo "=== SHARED SECRET ===" && echo "${SHARED_SECRET}" && echo
 # IPsec config
 envsubst '
          ${HOST_ADDR}
+         ${HOST_FQDN}
          ${VPN_SUBNET}
          ${VPN_SUBNET_IP6}
          ${DNS_SERVER1}

@@ -27,7 +27,7 @@ conn rw
     esp=chacha20poly1305-newhope128,chacha20poly1305-ecp256,aes128gcm16-ecp256,aes256-sha256-modp2048,aes256-sha256,aes256-sha1!
 
     left=%defaultroute
-    leftid=${HOST_ADDR}
+    leftid=${HOST_FQDN}
     # http://wiki.loopop.net/doku.php?id=server:vpn:strongswanonopenvz
     # https://wiki.strongswan.org/projects/strongswan/wiki/ForwardingAndSplitTunneling
     leftsubnet=0.0.0.0/0,::/0

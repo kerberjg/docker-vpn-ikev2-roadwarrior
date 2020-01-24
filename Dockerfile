@@ -77,6 +77,7 @@ RUN apk --no-cache add --virtual runtime_deps ${RUNTIME_DEPS}
 ##
 # Networking
 EXPOSE 4500:4500/udp 500:500/udp
+ENV HOST_FQDN='example.com'
 ENV HOST_ADDR='localhost'
 ENV VPN_SUBNET='10.8.0.0/16'
 ENV VPN_SUBNET_IP6="fd6a:6ce3:c8d8:7caa::/64"
