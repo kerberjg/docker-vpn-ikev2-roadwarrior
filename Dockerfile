@@ -16,7 +16,7 @@ RUN mkdir /tmp/strongswan \
     && cd /tmp \
     && curl -L "https://download.strongswan.org/strongswan-${STRONGSWAN_VERSION}.tar.gz" -o strongswan.tar.gz \
     && curl -L "https://download.strongswan.org/strongswan-${STRONGSWAN_VERSION}.tar.gz.sig" -o strongswan.tar.gz.sig \
-    && gpg --receive-keys 0xb34dba77 \
+    && gpg --keyserver keys.gnupg.net --receive-keys 0xb34dba77 \
     && echo hullo \
     && gpg --verify ./strongswan.tar.gz.sig \
     && tar --strip-components=1 -C /tmp/strongswan -xf /tmp/strongswan.tar.gz \
