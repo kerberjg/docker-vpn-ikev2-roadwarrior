@@ -13,7 +13,7 @@ conn %default
     rekey=no
     fragmentation=yes
     forceencaps=yes
-    dpdaction=hold
+    dpdaction=clear
     dpddelay=30s
     dpdtimeout=300s
 

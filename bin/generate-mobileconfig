@@ -90,7 +90,7 @@ cat <<EOF
                     <key>DisableMOBIKE</key>
                     <integer>0</integer>
                     <key>DeadPeerDetectionRate</key>
-                    <string>Medium</string>
+                    <string>High</string>
                     <key>DisableRedirect</key>
                     <integer>1</integer>
                     <key>EnableFallback</key>
